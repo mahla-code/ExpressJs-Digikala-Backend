@@ -25,6 +25,9 @@ async function main () {
     });
     app.use((err, req, res, next) => {
         const status = err?.status ?? err?.statusCode ?? 500;
+        if (err?.name === "JsonWebTokenError" || err?.name === "TokenExpiredError") {
+         status = 401;
+        }
         let message = err?.message ?? "internal server error";
         if (err?.name == "ValidationError") {
             const {details} = err;

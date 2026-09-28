@@ -7,7 +7,7 @@ config();
 async function sendOtpHandler (req, res, next) {
     try {
         const {mobile} = req.body;
-        let code = Math.floor(Math.random() * 99999 - 10000) + 10000;
+        let code = Math.floor(Math.random() * 99999 )+ 10000;
         let user = await User.findOne({
             where: {mobile}
         });
@@ -52,7 +52,7 @@ async function checkOtpHandler (req, res, next) {
         if (!user) {
             throw createHttpError(401, "user account not found");
         }
-        if (user?.otp?.code !== code) {
+        if (user?.otp?.code !== String(code)) {
             throw createHttpError(401, "otp code is invalid");
         }
         if (user?.otp?.expires_in < new Date()) {
