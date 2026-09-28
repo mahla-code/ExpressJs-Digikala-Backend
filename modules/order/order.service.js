@@ -48,51 +48,68 @@ async function getOneOrderByIdHandler (req, res, next) {
     }
 }
 async function setPackedStatusToOrder (req, res, next) {
-    const {id} = req.params;
-    const order = await Order.findByPk(id);
-    if (!order) throw createHttpError(404, "order notfound");
-    if (order.status !== OrderStatus.InProcess) throw createHttpError(400, "order status should be in-process");
-    order.status = OrderStatus.Packed;
-    await order.save();
-    return res.json({
-        message: "order status set to packed"
-    });
+    try {
+        const {id} = req.params;
+        const order = await Order.findByPk(id);
+        if (!order) throw createHttpError(404, "order notfound");
+        if (order.status !== OrderStatus.InProcess) throw createHttpError(400, "order status should be in-process");
+        order.status = OrderStatus.Packed;
+        await order.save();
+        return res.json({
+            message: "order status set to packed"
+        });
+    } catch (error) {
+        next(error)
+    }
 }
 async function setInTransitStatusToOrder (req, res, next) {
-    const {id} = req.params;
-    const order = await Order.findByPk(id);
-    if (!order) throw createHttpError(404, "order notfound");
-    if (order.status !== OrderStatus.Packed) throw createHttpError(400, "order status should be packed");
-    order.status = OrderStatus.InTransit;
-    await order.save();
-    return res.json({
-        message: "order status set to in-transit"
-    });
+    try {
+        const {id} = req.params;
+        const order = await Order.findByPk(id);
+        if (!order) throw createHttpError(404, "order notfound");
+        if (order.status !== OrderStatus.Packed) throw createHttpError(400, "order status should be packed");
+        order.status = OrderStatus.InTransit;
+        await order.save();
+        return res.json({
+            message: "order status set to in-transit"
+        });
+    } catch (error) {
+        next(error)
+    }
 }
 async function setCanceledStatusToOrder (req, res, next) {
-    const {id} = req.params;
-    const {reason} = req.body;
-    const order = await Order.findByPk(id);
-    if (!order) throw createHttpError(404, "order notfound");
-    if ([OrderStatus.Pending, OrderStatus.Delivery, OrderStatus.Canceled].includes(order.status))
-        throw createHttpError(400, "order can not be canceled at this stage");
-    order.status = OrderStatus.Canceled;
-    order.reason = reason;
-    await order.save();
-    return res.json({
-        message: "order canceled successfully"
-    });
+    try {
+        const {id} = req.params;
+        const {reason} = req.body;
+        const order = await Order.findByPk(id);
+        if (!order) throw createHttpError(404, "order notfound");
+        if ([OrderStatus.Pending, OrderStatus.Delivery, OrderStatus.Canceled].includes(order.status))
+            throw createHttpError(400, "order can not be canceled at this stage");
+        order.status = OrderStatus.Canceled;
+        order.reason = reason;
+        await order.save();
+        return res.json({
+            message: "order canceled successfully"
+        });
+    } catch (error) {
+        next(error)
+        
+    }
 }
 async function setDeliveryStatusToOrder (req, res, next) {
-    const {id} = req.params;
-    const order = await Order.findByPk(id);
-    if (!order) throw createHttpError(404, "order notfound ");
-    if (order.status !== OrderStatus.InTransit) throw createHttpError(400, "order status should be in-transit");
-    order.status = OrderStatus.Delivery;
-    await order.save();
-    return res.json({
-        message: "order delivered to customer successfully"
-    });
+    try {
+        const {id} = req.params;
+        const order = await Order.findByPk(id);
+        if (!order) throw createHttpError(404, "order notfound ");
+        if (order.status !== OrderStatus.InTransit) throw createHttpError(400, "order status should be in-transit");
+        order.status = OrderStatus.Delivery;
+        await order.save();
+        return res.json({
+            message: "order delivered to customer successfully"
+        });
+    } catch (error) {
+        next(error)
+    }
 }
 module.exports = {
     getMyOrdersHandler,
